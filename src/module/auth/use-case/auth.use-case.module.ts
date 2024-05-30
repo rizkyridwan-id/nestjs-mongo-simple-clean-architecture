@@ -5,6 +5,7 @@ import { authUseCaseProvider } from './auth.use-case.provider';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvService } from 'src/infra/config/env.service';
+import { JwtStrategy } from 'src/infra/auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { EnvService } from 'src/infra/config/env.service';
       inject: [EnvService],
     }),
   ],
-  providers: [...authUseCaseProvider],
+  providers: [...authUseCaseProvider, JwtStrategy],
   exports: [...authUseCaseProvider],
 })
 export class AuthUseCaseModule {}
