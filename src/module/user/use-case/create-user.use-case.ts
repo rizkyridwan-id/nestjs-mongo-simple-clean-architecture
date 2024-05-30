@@ -9,7 +9,6 @@ import { BaseUseCase } from 'src/core/base/module/use-case.base';
 
 import { OptionalSecretKey } from 'src/core/interface/optional-secret-key.interface';
 import { EnvService } from 'src/infra/config/env.service';
-import { CraeteUserRequestDto } from '../controller/dtos/create-user.request.dto';
 import { InjectUserRepository } from '../repository/user.repository.provider';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
 import { SHA256 } from 'crypto-js';

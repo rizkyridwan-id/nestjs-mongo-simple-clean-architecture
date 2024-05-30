@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { UpdateUserRequestDto } from '../controller/dtos/update-user.request.dto';
 import { InjectUserRepository } from '../repository/user.repository.provider';
 
 import { BaseUseCase } from 'src/core/base/module/use-case.base';
