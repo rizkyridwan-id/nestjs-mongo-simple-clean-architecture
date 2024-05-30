@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BaseMongoEntity } from 'src/core/base/domain/mongo-entity';
+import { HydratedDocument } from 'mongoose';
 
 @Schema({ collection: 'tm_user' })
-export class UserMongoEntity extends BaseMongoEntity<typeof UserMongoEntity> {
+export class UserMongoEntity {
   @Prop({ required: true, unique: true })
   user_id: string;
 
@@ -14,9 +14,6 @@ export class UserMongoEntity extends BaseMongoEntity<typeof UserMongoEntity> {
 
   @Prop({ required: true })
   level: string;
-
-  @Prop({ type: String, default: '[]' })
-  hak_akses_json?: string;
 
   @Prop()
   input_by?: string;
@@ -31,5 +28,6 @@ export class UserMongoEntity extends BaseMongoEntity<typeof UserMongoEntity> {
   edit_date?: Date;
 }
 
+export type UserDocument = HydratedDocument<UserMongoEntity>;
 export const UserSchema = SchemaFactory.createForClass(UserMongoEntity);
 export const UserModel = [{ name: UserMongoEntity.name, schema: UserSchema }];

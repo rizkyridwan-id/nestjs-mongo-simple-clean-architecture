@@ -5,31 +5,33 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ResponseDto } from 'src/core/base/http/response.dto.base';
-import { BaseUseCase, IUseCase } from 'src/core/base/module/use-case.base';
+import { BaseUseCase } from 'src/core/base/module/use-case.base';
 
 import { OptionalSecretKey } from 'src/port/interface/optional-secret-key.interface';
 import { EnvService } from 'src/infra/config/env.service';
-import { UserRepositoryPort } from '../../../port/repository/user.repository.port';
 import { CraeteUserRequestDto } from '../controller/dtos/create-user.request.dto';
 import { InjectUserRepository } from '../repository/user.repository.provider';
-import { UserEntity } from '../domain/user.entity';
-import { UserLevel } from '../domain/value-objects/user-level.value-object';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
 import { SHA256 } from 'crypto-js';
-import { UserHakAkses } from '../domain/value-objects/user-hak-akses.value-object';
+import { UserRepository } from '../repository/user.repository.service';
+import { UserMongoEntity } from '../repository/user.mongo-entity';
+import { HashService } from 'src/core/helper/module/hash.service';
+import { IRepositoryResponse } from 'src/port/interface/repository-response.interface';
 type TCreateUserPayload = PickUseCasePayload<
   CraeteUserRequestDto & OptionalSecretKey,
   'data' | 'user'
 >;
+type TCreateUserResponse = ResponseDto<IRepositoryResponse>;
 
 @Injectable()
-export class CreateUser
-  extends BaseUseCase
-  implements IUseCase<TCreateUserPayload>
-{
+export class CreateUser extends BaseUseCase<
+  TCreateUserPayload,
+  TCreateUserResponse
+> {
   constructor(
-    @InjectUserRepository private userRepository: UserRepositoryPort,
+    @InjectUserRepository private userRepository: UserRepository,
     private envService: EnvService,
+    private hashService: HashService,
   ) {
     super();
   }
@@ -37,27 +39,26 @@ export class CreateUser
   public async execute({
     data,
     user,
-  }: TCreateUserPayload): Promise<ResponseDto> {
+  }: TCreateUserPayload): Promise<TCreateUserResponse> {
     await this.userRepository.findOneAndThrow({ user_id: data.user_id });
 
     const isSecretKeyValid = await this._validateSecretKey(data.secretKey);
     const level = await this._generateUserLevel(isSecretKeyValid, data?.level);
-
+    const hashedPassword = await this.hashService.generate(data.password);
     try {
-      const userEntity = await UserEntity.create({
+      const userEntity: UserMongoEntity = {
         user_name: data.user_name,
         user_id: data.user_id,
-        password: data.password,
-        level: level,
+        password: hashedPassword,
+        level: level!,
         input_by: user?.user_id,
-        hak_akses_json: new UserHakAkses(data.hak_akses_json),
-      });
+      };
 
       const result = await this.userRepository.save(userEntity);
 
       return new ResponseDto({ status: HttpStatus.CREATED, data: result });
     } catch (err) {
-      this.logger.error(err.message);
+      this.logger.error(err);
 
       throw new HttpException(
         { message: err.message || err },
@@ -85,6 +86,6 @@ export class CreateUser
         { level: 'SU' },
         'Level System Sudah Terdaftar.',
       );
-    return isSecretKeyValid ? new UserLevel('SU') : new UserLevel(level!);
+    return isSecretKeyValid ? 'SU' : level;
   }
 }

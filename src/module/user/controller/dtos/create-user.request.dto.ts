@@ -4,5 +4,4 @@ import * as z from 'zod';
 export type CraeteUserRequestDto = z.infer<typeof CraeteUserRequestDto>;
 export const CraeteUserRequestDto = RegisterUserRequestDto.extend({
   level: z.string().optional(),
-  hak_akses_json: z.string().optional(),
 });

@@ -1,27 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserRepositoryPort } from '../../../port/repository/user.repository.port';
-import { UserMongoEntity } from './user.mongo-entity';
-
-import { UserEntity } from '../domain/user.entity';
-import { UserMapper } from '../domain/user.mapper';
+import { UserDocument, UserMongoEntity } from './user.mongo-entity';
 
 import { BaseRepository } from 'src/core/base/module/repository.base';
 
 @Injectable()
-export class UserRepository
-  extends BaseRepository<UserEntity, UserMongoEntity>
-  implements UserRepositoryPort
-{
+export class UserRepository extends BaseRepository<
+  UserMongoEntity,
+  UserDocument
+> {
   constructor(
     @InjectModel(UserMongoEntity.name)
     private userModel: Model<UserMongoEntity>,
   ) {
-    super(userModel, UserMapper);
+    super(userModel);
   }
 
-  async findActiveUser(): Promise<Array<UserMongoEntity>> {
+  async findActiveUser(): Promise<Array<UserDocument>> {
     return await this.userModel.find({ status: true });
   }
 }

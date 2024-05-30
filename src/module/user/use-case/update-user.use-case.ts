@@ -6,46 +6,44 @@ import {
 } from '@nestjs/common';
 
 import { UpdateUserRequestDto } from '../controller/dtos/update-user.request.dto';
-import { UserRepositoryPort } from '../../../port/repository/user.repository.port';
 import { InjectUserRepository } from '../repository/user.repository.provider';
 
-import { BaseUseCase, IUseCase } from 'src/core/base/module/use-case.base';
+import { BaseUseCase } from 'src/core/base/module/use-case.base';
 import { ResponseDto } from 'src/core/base/http/response.dto.base';
 
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
-import { ObjectIdVO } from 'src/core/value-object/object-id.value-object';
-import { UserHakAkses } from '../domain/value-objects/user-hak-akses.value-object';
+import { UserRepository } from '../repository/user.repository.service';
+import { Types } from 'mongoose';
+import { UserMongoEntity } from '../repository/user.mongo-entity';
 
 type TUpdateUserPayload = PickUseCasePayload<
   UpdateUserRequestDto,
   'data' | '_id'
 >;
+type TUpdateUserResponse = ResponseDto;
 @Injectable()
-export class UpdateUser
-  extends BaseUseCase
-  implements IUseCase<TUpdateUserPayload>
-{
-  constructor(
-    @InjectUserRepository private userRepository: UserRepositoryPort,
-  ) {
+export class UpdateUser extends BaseUseCase<
+  TUpdateUserPayload,
+  TUpdateUserResponse
+> {
+  constructor(@InjectUserRepository private userRepository: UserRepository) {
     super();
   }
 
-  async execute({ data, _id }: TUpdateUserPayload): Promise<ResponseDto> {
+  async execute({
+    data,
+    _id,
+  }: TUpdateUserPayload): Promise<TUpdateUserResponse> {
     try {
-      const userEntity = await this.userRepository.findById(
-        new ObjectIdVO(_id).valueConverted,
-      );
-      if (!userEntity) throw new NotFoundException('User not found.');
+      const idConverted = new Types.ObjectId(_id);
+      const user = await this.userRepository.findById(idConverted);
+      if (!user) throw new NotFoundException('User not found.');
 
-      userEntity.updateUser(data);
+      this._updateUserProps(user, data);
 
-      await this.userRepository.updateOne(
-        { _id: userEntity.propsCopy._id },
-        userEntity,
-      );
+      user.save();
     } catch (err) {
-      this.logger.error(err.message);
+      this.logger.error(err);
       if (err instanceof HttpException) throw err;
 
       throw new HttpException(err.message, 500);
@@ -54,5 +52,10 @@ export class UpdateUser
       status: HttpStatus.OK,
       message: `User ${_id} documents updated`,
     });
+  }
+
+  private _updateUserProps(user: UserMongoEntity, data: UpdateUserRequestDto) {
+    user.user_name = data.user_name;
+    user.level = data.level;
   }
 }

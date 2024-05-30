@@ -21,12 +21,10 @@ export class UserResponseDto
     this.user_id = props.user_id;
     this.user_name = props.user_name;
     this.level = props.level;
-    this.hak_akses_json = props.hak_akses_json;
   }
 
   _id: Types.ObjectId;
   user_id: string;
   user_name: string;
   level: string;
-  hak_akses_json?: string;
 }

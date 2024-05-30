@@ -10,11 +10,14 @@ import { LoginUser } from '../use-case/login.use-case';
 import { CreateUser } from 'src/module/user/use-case/create-user.use-case';
 import { RegisterUserRequestDto } from './dto/register-user-request.dto';
 import { ZodBody } from 'src/core/decorator/zod-body.decorator';
+import { AuthRefreshTokenRequestDto } from './dto/auth-refresh-token.dto';
+import { RefreshToken } from '../use-case/refresh-token.use-case';
 @Controller('v1/auth')
 export class AuthController {
   constructor(
     readonly loginUser: LoginUser,
     readonly createUser: CreateUser,
+    readonly refreshToken: RefreshToken,
   ) {}
 
   @Post('register-su')
@@ -33,5 +36,10 @@ export class AuthController {
   @Post('login')
   async loginUserHandler(@ZodBody(LoginRequestDto) body: LoginRequestDto) {
     return this.loginUser.execute({ data: body });
+  }
+
+  @Post('refresh')
+  async refreshTokenHandler(@Body() body: AuthRefreshTokenRequestDto) {
+    return this.refreshToken.execute({ data: body });
   }
 }

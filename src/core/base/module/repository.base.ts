@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import {
   ClientSession,
-  Document,
   FilterQuery,
+  Document,
   isValidObjectId,
   Model,
   SortOrder,
@@ -18,50 +18,48 @@ import {
 import { IRepositoryResponse } from '../../../port/interface/repository-response.interface';
 import { BaseRepositoryPort } from '../../../port/repository/repository.base.port';
 import { IPaginationMeta } from '../../../port/interface/pagination-meta.interface';
-import { DbMapper } from '../domain/db-mapper';
 import { TypeValidator } from '../../logic/type-validator';
 
 @Injectable()
-export abstract class BaseRepository<Entity, MongoEntity>
-  implements BaseRepositoryPort<Entity, MongoEntity>
+export abstract class BaseRepository<
+  MongoEntity,
+  MongoDocument extends Document,
+> implements BaseRepositoryPort<MongoEntity, MongoDocument>
 {
-  constructor(
-    private readonly genericModel: Model<MongoEntity>,
-    private readonly mapper: DbMapper<Entity, MongoEntity>,
-  ) {}
+  constructor(private readonly genericModel: Model<MongoEntity>) {}
 
-  async findAll(session: ClientSession | null = null): Promise<Entity[]> {
-    const result = await this.genericModel.find().session(session);
-    return result.map((it) => this.mapper.toDomain(it));
+  async findAll(
+    session: ClientSession | null = null,
+  ): Promise<MongoDocument[]> {
+    return (await this.genericModel.find().session(session)) as MongoDocument[];
   }
 
   async findOne(
     identifier: FilterQuery<MongoEntity>,
     session: ClientSession | null = null,
-  ): Promise<Entity | undefined> {
-    const result = await this.genericModel.findOne(identifier).session(session);
-    if (!result) return;
-    return this.mapper.toDomain(result?.toObject());
+  ): Promise<MongoDocument | null> {
+    return (await this.genericModel
+      .findOne(identifier)
+      .session(session)) as MongoDocument;
   }
 
   async findOneOrThrow(
     identifier: FilterQuery<MongoEntity>,
     session?: ClientSession,
-  ): Promise<Entity>;
+  ): Promise<MongoDocument>;
   async findOneOrThrow(
     identifier: FilterQuery<MongoEntity>,
     errorMessage?: string,
     session?: ClientSession,
-  ): Promise<Entity>;
+  ): Promise<MongoDocument>;
   async findOneOrThrow(
     identifier: FilterQuery<MongoEntity>,
     paramTwo: string | ClientSession | null = null,
     paramThree: ClientSession | null = null,
-  ): Promise<Entity> {
+  ): Promise<MongoDocument> {
     const foundData = await this.genericModel
       .findOne(identifier)
       .session(typeof paramTwo !== 'string' ? paramTwo : paramThree);
-
     if (!foundData) {
       throw new NotFoundException(
         typeof paramTwo === 'string'
@@ -71,7 +69,7 @@ export abstract class BaseRepository<Entity, MongoEntity>
               .toUpperCase()} NOT FOUND`,
       );
     }
-    return this.mapper.toDomain(foundData);
+    return foundData as MongoDocument;
   }
 
   async findOneAndThrow(
@@ -103,63 +101,58 @@ export abstract class BaseRepository<Entity, MongoEntity>
   async findOneLatest(
     identifier: FilterQuery<MongoEntity>,
     session: ClientSession | null = null,
-  ): Promise<Entity | undefined> {
+  ): Promise<MongoDocument | null> {
     const result = await this.genericModel
       .findOne(identifier)
       .sort({ _id: -1 })
       .session(session);
-    if (!result) return;
 
-    return this.mapper.toDomain(result);
+    return result as MongoDocument;
   }
 
   async findById(
     id: Types.ObjectId,
     session: ClientSession | null = null,
-  ): Promise<Entity | undefined> {
+  ): Promise<MongoDocument | null> {
     this._validateMongoID(id);
     const result = await this.genericModel.findById(id).session(session);
-    if (!result) return;
-    return this.mapper.toDomain(result);
+    return result as MongoDocument;
   }
 
   async findBy(
     identifier: FilterQuery<MongoEntity>,
     session: ClientSession | null = null,
-  ): Promise<Entity[]> {
+  ): Promise<MongoDocument[]> {
     const result = await this.genericModel
       .aggregate([{ $match: identifier }])
       .session(session);
-
-    return result.map((it) => this.mapper.toDomain(it));
+    return result as MongoDocument[];
   }
 
   async findByPaginated(
     identifier: FilterQuery<MongoEntity>,
     paginationMeta: IPaginationMeta,
-  ) {
+  ): Promise<MongoDocument[]> {
     const { limit = 100, skip = 0 } = paginationMeta;
     const result = await this.genericModel
       .find(identifier)
       .skip(skip)
       .limit(limit);
-
-    return result.map((it) => this.mapper.toDomain(it));
+    return result as MongoDocument[];
   }
 
   async findByPaginateSorted(
     identifier: FilterQuery<MongoEntity>,
     paginationMeta: IPaginationMeta,
     sort: { [key: string]: SortOrder | { $meta: any } },
-  ) {
+  ): Promise<MongoDocument[]> {
     const { limit = 100, skip = 0 } = paginationMeta;
     const result = await this.genericModel
       .find(identifier)
       .skip(skip)
       .sort(sort)
       .limit(limit);
-
-    return result.map((it) => this.mapper.toDomain(it));
+    return result as MongoDocument[];
   }
 
   async count(): Promise<number> {
@@ -171,38 +164,27 @@ export abstract class BaseRepository<Entity, MongoEntity>
   }
 
   async save(
-    entity: Entity,
+    entity: MongoEntity,
     session?: ClientSession,
   ): Promise<IRepositoryResponse> {
-    const mongoEntity = new this.genericModel(
-      this.mapper.toPlainObject(entity),
-    );
-    const newModel = new this.genericModel(mongoEntity);
+    const newModel = new this.genericModel(entity);
     const result = await newModel.save({ session });
     return {
       _id: result._id as Types.ObjectId,
     };
   }
   async saveReturnDocument(
-    entity: Entity,
+    entity: MongoEntity,
     session?: ClientSession,
-  ): Promise<Document<unknown, unknown, MongoEntity>> {
-    const mongoEntity = new this.genericModel(
-      this.mapper.toPlainObject(entity),
-    );
-    const newModel = new this.genericModel(mongoEntity);
+  ): Promise<MongoDocument> {
+    const newModel = new this.genericModel(entity);
     const result = await newModel.save({ session });
     return result?.toObject();
   }
-  async saveMany(entities: Entity[], session?: ClientSession) {
-    const mongoEntities = entities.map(
-      (entity) => new this.genericModel(this.mapper.toPlainObject(entity)),
-    );
-    const mongoEntitiesEncrypted = mongoEntities;
-    const saveResult = await this.genericModel.insertMany(
-      mongoEntitiesEncrypted,
-      { session },
-    );
+  async saveMany(entities: MongoEntity[], session?: ClientSession) {
+    const saveResult = await this.genericModel.insertMany(entities, {
+      session,
+    });
     return {
       n: saveResult.length,
     };
@@ -210,14 +192,14 @@ export abstract class BaseRepository<Entity, MongoEntity>
 
   async updateOne(
     identifier: FilterQuery<MongoEntity>,
-    data: Entity,
+    data: UpdateQuery<MongoEntity>,
     session?: ClientSession,
   ): Promise<IRepositoryResponse> {
     if (identifier._id) this._validateMongoID(identifier._id);
 
     const { matchedCount, modifiedCount } = await this.genericModel.updateOne(
       identifier,
-      this.mapper.toPlainObject(data),
+      data,
       {
         session,
       },
@@ -236,14 +218,14 @@ export abstract class BaseRepository<Entity, MongoEntity>
 
   async updateOneWithoutThrow(
     identifier: FilterQuery<MongoEntity>,
-    data: Entity,
+    data: UpdateQuery<MongoEntity>,
     session?: ClientSession,
   ): Promise<IRepositoryResponse> {
     if (identifier._id) this._validateMongoID(identifier._id);
 
     const { matchedCount: n } = await this.genericModel.updateOne(
       identifier,
-      this.mapper.toPlainObject(data),
+      data,
       {
         session,
       },
@@ -271,7 +253,7 @@ export abstract class BaseRepository<Entity, MongoEntity>
   }
 
   async delete(
-    identifier: FilterQuery<Partial<MongoEntity>>,
+    identifier: FilterQuery<MongoEntity>,
     session?: ClientSession,
   ): Promise<IRepositoryResponse> {
     if (identifier._id) this._validateMongoID(identifier._id);
@@ -289,7 +271,7 @@ export abstract class BaseRepository<Entity, MongoEntity>
   }
 
   async deleteWithoutThrow(
-    identifier: FilterQuery<Partial<MongoEntity>>,
+    identifier: FilterQuery<MongoEntity>,
     session?: ClientSession,
   ): Promise<IRepositoryResponse> {
     if (identifier._id) this._validateMongoID(identifier._id);

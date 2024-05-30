@@ -11,15 +11,17 @@ export interface IUseCasePayload<T> {
   user: JwtDecoded;
 }
 
-export interface IUseCase<IReq> {
-  execute(request?: IReq);
+export interface IUseCase<IReq, IRes> {
+  execute(request?: IReq): IRes | Promise<IRes>;
 }
 
 @Injectable()
-export class BaseUseCase {
+export abstract class BaseUseCase<IReq, IRes> implements IUseCase<IReq, IRes> {
   protected logger: CustomLogger;
 
   constructor() {
     this.logger = new CustomLogger(this.constructor.name);
   }
+
+  abstract execute(request?: IReq): IRes | Promise<IRes>;
 }

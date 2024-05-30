@@ -8,3 +8,16 @@ export interface UserResponseDtoProps extends IId {
   level: string;
   hak_akses_json?: string;
 }
+
+export interface LoginUserResponseDto {
+  user_id: string;
+  access_token: string;
+  refresh_token: string;
+  level: string;
+  user_name: string;
+}
+
+export interface RefreshTokenResponseProps {
+  access_token: string;
+  refresh_token: string;
+}

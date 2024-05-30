@@ -14,7 +14,6 @@ import {
 import fastifyCsrf from '@fastify/csrf-protection';
 import fastifyHelmet from '@fastify/helmet';
 import { DebugLoggerInterceptor } from './core/interceptor/debug-logger.interceptor';
-import { DecryptBodyInterceptor } from './core/interceptor/decrypt-body.interceptor';
 
 async function bootstrap() {
   const httpsMode = !!Number(process.env.HTTPS_MODE);
@@ -36,7 +35,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  app.useGlobalInterceptors(new DecryptBodyInterceptor());
   app.useGlobalInterceptors(new DebugLoggerInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
