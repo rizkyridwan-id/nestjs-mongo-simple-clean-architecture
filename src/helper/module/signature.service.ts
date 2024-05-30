@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SHA256 } from 'crypto-js';
-import { EnvService } from '../../../infra/config/env.service';
+import { EnvService } from '../../infra/config/env.service';
 
 @Injectable()
 export class SignatureService {

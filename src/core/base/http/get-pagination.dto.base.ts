@@ -1,11 +1,7 @@
-import { SortOrder } from 'mongoose';
+import { GetPaginationRequestQueryProps } from 'src/core/port/get-pagination.request.port';
 import * as z from 'zod';
 
-export type GetPaginationDto = z.infer<typeof GetPaginationDto> & {
-  sort_by?: SortOrder;
-};
-
-export const GetPaginationDto = z.object({
+export const GetPaginationRequestDto = z.object({
   skip: z
     .string()
     .regex(/\d+/, { message: 'Format skip tidak valid' })
@@ -18,4 +14,4 @@ export const GetPaginationDto = z.object({
   sort_by: z
     .record(z.enum(['asc', 'ascending', 'desc', 'descending']))
     .optional(),
-});
+}) satisfies z.ZodType<GetPaginationRequestQueryProps>;

@@ -1,5 +1,5 @@
 import { Controller, Param } from '@nestjs/common';
-import { GetPaginationDto } from 'src/core/base/http/get-pagination.dto.base';
+import { GetPaginationRequestDto } from 'src/core/base/http/get-pagination.dto.base';
 import { JwtDecoded } from 'src/core/base/module/use-case.base';
 import { AuthUser } from 'src/core/decorator/auth-user.decorator';
 import { SecureDelete } from 'src/core/decorator/secure-delete.decorator';
@@ -16,6 +16,11 @@ import { CraeteUserRequestDto } from './dtos/create-user.request.dto';
 import { UpdateUserRequestDto } from './dtos/update-user.request.dto';
 import { ZodBody } from 'src/core/decorator/zod-body.decorator';
 import { ZodQuery } from 'src/core/decorator/zod-query.decorator';
+import {
+  CreateUserRequest,
+  UpdateUserRequest,
+} from '../port/user.request.port';
+import { GetPaginationRequestQueryProps } from 'src/core/port/get-pagination.request.port';
 
 @Controller('v1/users')
 export class UsersController {
@@ -28,14 +33,16 @@ export class UsersController {
 
   @SecurePost()
   async createUserHandler(
-    @ZodBody(CraeteUserRequestDto) body: CraeteUserRequestDto,
+    @ZodBody(CraeteUserRequestDto) body: CreateUserRequest,
     @AuthUser() user: JwtDecoded,
   ) {
     return await this.createUser.execute({ data: body, user });
   }
 
   @SecureGet()
-  async getUserHandler(@ZodQuery(GetPaginationDto) query: GetPaginationDto) {
+  async getUserHandler(
+    @ZodQuery(GetPaginationRequestDto) query: GetPaginationRequestQueryProps,
+  ) {
     return this.getUser.execute({ data: query });
   }
 
@@ -47,7 +54,7 @@ export class UsersController {
   @SecurePut(':_id')
   update(
     @ZodBody(UpdateUserRequestDto)
-    body: UpdateUserRequestDto,
+    body: UpdateUserRequest,
     @Param('_id') _id: string,
   ) {
     return this.updateUser.execute({ _id, data: body });

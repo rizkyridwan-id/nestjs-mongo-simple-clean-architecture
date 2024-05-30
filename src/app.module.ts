@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { HelperModule } from './core/helper/helper.module';
+import { HelperModule } from './helper/helper.module';
 import { databaseProviders } from './infra/database/database.provider';
 import { ResourceModule } from './module/resource.module';
 

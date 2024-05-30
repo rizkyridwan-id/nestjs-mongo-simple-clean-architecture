@@ -1,9 +1,7 @@
 import * as z from 'zod';
+import { AuthRefreshTokenRequestProps } from '../../port/auth.request.port';
 
-export type AuthRefreshTokenRequestDto = z.infer<
-  typeof AuthRefreshTokenRequestDto
->;
 export const AuthRefreshTokenRequestDto = z.object({
   user_id: z.string(),
   refresh_token: z.string(),
-});
+}) satisfies z.ZodType<AuthRefreshTokenRequestProps>;

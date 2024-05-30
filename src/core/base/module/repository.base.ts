@@ -15,10 +15,10 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
-import { IRepositoryResponse } from '../../../port/interface/repository-response.interface';
-import { BaseRepositoryPort } from '../../../port/repository/repository.base.port';
-import { IPaginationMeta } from '../../../port/interface/pagination-meta.interface';
+import { IRepositoryResponse } from '../../interface/repository-response.interface';
+import { IPaginationMeta } from '../../interface/pagination-meta.interface';
 import { TypeValidator } from '../../logic/type-validator';
+import { BaseRepositoryPort } from 'src/core/port/repository.base.port';
 
 @Injectable()
 export abstract class BaseRepository<

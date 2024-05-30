@@ -7,7 +7,7 @@ import {
 import { ResponseDto } from 'src/core/base/http/response.dto.base';
 import { BaseUseCase } from 'src/core/base/module/use-case.base';
 
-import { OptionalSecretKey } from 'src/port/interface/optional-secret-key.interface';
+import { OptionalSecretKey } from 'src/core/interface/optional-secret-key.interface';
 import { EnvService } from 'src/infra/config/env.service';
 import { CraeteUserRequestDto } from '../controller/dtos/create-user.request.dto';
 import { InjectUserRepository } from '../repository/user.repository.provider';
@@ -15,10 +15,11 @@ import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.ty
 import { SHA256 } from 'crypto-js';
 import { UserRepository } from '../repository/user.repository.service';
 import { UserMongoEntity } from '../repository/user.mongo-entity';
-import { HashService } from 'src/core/helper/module/hash.service';
-import { IRepositoryResponse } from 'src/port/interface/repository-response.interface';
+import { HashService } from 'src/helper/module/hash.service';
+import { IRepositoryResponse } from 'src/core/interface/repository-response.interface';
+import { CreateUserRequest } from '../port/user.request.port';
 type TCreateUserPayload = PickUseCasePayload<
-  CraeteUserRequestDto & OptionalSecretKey,
+  CreateUserRequest & OptionalSecretKey,
   'data' | 'user'
 >;
 type TCreateUserResponse = ResponseDto<IRepositoryResponse>;

@@ -6,8 +6,8 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
-import { IPaginationMeta } from '../interface/pagination-meta.interface';
-import { IRepositoryResponse } from '../interface/repository-response.interface';
+import { IPaginationMeta } from 'src/core/interface/pagination-meta.interface';
+import { IRepositoryResponse } from 'src/core/interface/repository-response.interface';
 
 export interface BaseRepositoryPort<
   MongoEntity,

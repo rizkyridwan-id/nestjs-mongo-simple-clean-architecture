@@ -4,8 +4,8 @@ import { ResponseDto } from 'src/core/base/http/response.dto.base';
 import { BaseUseCase } from 'src/core/base/module/use-case.base';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
 import { EnvService } from 'src/infra/config/env.service';
-import { AuthRefreshTokenRequestDto } from 'src/module/auth/controller/dto/auth-refresh-token.dto';
-import { RefreshTokenResponseProps } from 'src/port/dto/user.response-dto.port';
+import { AuthRefreshTokenRequestProps } from '../port/auth.request.port';
+import { RefreshTokenResponseProps } from '../port/auth.response.port';
 
 interface IHistoryRefreshToken {
   refresh_token: string;
@@ -13,7 +13,7 @@ interface IHistoryRefreshToken {
 }
 
 type TRefreshTokenPayload = PickUseCasePayload<
-  AuthRefreshTokenRequestDto,
+  AuthRefreshTokenRequestProps,
   'data'
 >;
 type TRefreshTokenResponse = ResponseDto<RefreshTokenResponseProps>;

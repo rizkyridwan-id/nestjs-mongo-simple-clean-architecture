@@ -6,13 +6,13 @@ import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.ty
 
 import { EnvService } from 'src/infra/config/env.service';
 import { InjectUserRepository } from 'src/module/user/repository/user.repository.provider';
-import { LoginRequestDto } from '../controller/dto/login-user-request.dto';
 import { UserRepository } from 'src/module/user/repository/user.repository.service';
-import { HashService } from 'src/core/helper/module/hash.service';
-import { LoginUserResponseDto } from 'src/port/dto/user.response-dto.port';
+import { HashService } from 'src/helper/module/hash.service';
+import { LoginUserRequestProps } from '../port/auth.request.port';
+import { LoginUserResponseProps } from '../port/auth.response.port';
 
-type TLoginPayload = PickUseCasePayload<LoginRequestDto, 'data'>;
-type TLoginResponse = ResponseDto<LoginUserResponseDto>;
+type TLoginPayload = PickUseCasePayload<LoginUserRequestProps, 'data'>;
+type TLoginResponse = ResponseDto<LoginUserResponseProps>;
 @Injectable()
 export class LoginUser extends BaseUseCase<TLoginPayload, TLoginResponse> {
   constructor(
