@@ -17,10 +17,10 @@ import { UpdateUserRequestDto } from './dtos/update-user.request.dto';
 import { ZodBody } from 'src/core/decorator/zod-body.decorator';
 import { ZodQuery } from 'src/core/decorator/zod-query.decorator';
 import {
-  CreateUserRequest,
-  UpdateUserRequest,
-} from '../port/user.request.port';
-import { GetPaginationRequestQueryProps } from 'src/core/port/get-pagination.request.port';
+  CreateUserRequestProps,
+  UpdateUserRequestProps,
+} from '../contract/user.request.contract';
+import { GetPaginationProps } from 'src/core/contract/get-pagination.request.contract';
 
 @Controller('v1/users')
 export class UsersController {
@@ -33,7 +33,7 @@ export class UsersController {
 
   @SecurePost()
   async createUserHandler(
-    @ZodBody(CraeteUserRequestDto) body: CreateUserRequest,
+    @ZodBody(CraeteUserRequestDto) body: CreateUserRequestProps,
     @AuthUser() user: JwtDecoded,
   ) {
     return await this.createUser.execute({ data: body, user });
@@ -41,7 +41,7 @@ export class UsersController {
 
   @SecureGet()
   async getUserHandler(
-    @ZodQuery(GetPaginationRequestDto) query: GetPaginationRequestQueryProps,
+    @ZodQuery(GetPaginationRequestDto) query: GetPaginationProps,
   ) {
     return this.getUser.execute({ data: query });
   }
@@ -54,7 +54,7 @@ export class UsersController {
   @SecurePut(':_id')
   update(
     @ZodBody(UpdateUserRequestDto)
-    body: UpdateUserRequest,
+    body: UpdateUserRequestProps,
     @Param('_id') _id: string,
   ) {
     return this.updateUser.execute({ _id, data: body });

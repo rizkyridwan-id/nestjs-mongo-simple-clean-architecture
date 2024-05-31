@@ -1,7 +1,7 @@
 import * as z from 'zod';
-import { UpdateUserRequest } from '../../port/user.request.port';
+import { UpdateUserRequestProps } from '../../contract/user.request.contract';
 
 export const UpdateUserRequestDto = z.object({
   user_name: z.string(),
   level: z.string(),
-}) satisfies z.ZodType<UpdateUserRequest>;
+}) satisfies z.ZodType<UpdateUserRequestProps>;

@@ -15,7 +15,7 @@ import {
   AuthRefreshTokenRequestProps,
   LoginUserRequestProps,
   RegisterUserRequestProps,
-} from '../port/auth.request.port';
+} from '../contract/auth.request.contract';
 @Controller('v1/auth')
 export class AuthController {
   constructor(

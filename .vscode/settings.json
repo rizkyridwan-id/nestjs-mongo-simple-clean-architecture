@@ -104,6 +104,10 @@
             "})",
             "export class <FTName | pascalcase>Module {}",
             ""
+        ],
+        "create contract": [
+            "// contracts belong here",
+            ""
         ]
     },
     // folder templates plugin
@@ -146,11 +150,20 @@
                     "fileName": "controller/<FTName | paramcase>.controller.ts",
                     "template": "create controller"
                 },
-                // 8. create resource module
+                // 8. create contract
+                {
+                    "fileName": "contract/<FTName | paramcase>.request.contract.ts",
+                    "template": "create contract"
+                },
+                {
+                    "fileName": "contract/<FTName | paramcase>.response.contract.ts",
+                    "template": "create contract"
+                },
+                // 9. create resource module
                 {
                     "fileName": "<FTName | paramcase>.module.ts",
                     "template": "create module resource"
-                }
+                },
             ]
         }
     ],

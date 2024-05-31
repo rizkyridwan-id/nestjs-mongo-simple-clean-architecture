@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { RegisterUserRequestProps } from '../../port/auth.request.port';
+import { RegisterUserRequestProps } from '../../contract/auth.request.contract';
 
 export const RegisterUserRequestDto = z.object({
   user_id: z.string(),

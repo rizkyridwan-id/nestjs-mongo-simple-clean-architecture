@@ -1,4 +1,4 @@
-export interface GetPaginationRequestQueryProps {
+export interface GetPaginationProps {
   skip?: string;
   limit?: string;
   first?: string;

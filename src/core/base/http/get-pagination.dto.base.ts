@@ -1,4 +1,4 @@
-import { GetPaginationRequestQueryProps } from 'src/core/port/get-pagination.request.port';
+import { GetPaginationProps } from 'src/core/contract/get-pagination.request.contract';
 import * as z from 'zod';
 
 export const GetPaginationRequestDto = z.object({
@@ -14,4 +14,4 @@ export const GetPaginationRequestDto = z.object({
   sort_by: z
     .record(z.enum(['asc', 'ascending', 'desc', 'descending']))
     .optional(),
-}) satisfies z.ZodType<GetPaginationRequestQueryProps>;
+}) satisfies z.ZodType<GetPaginationProps>;

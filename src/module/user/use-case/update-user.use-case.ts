@@ -14,9 +14,12 @@ import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.ty
 import { UserRepository } from '../repository/user.repository.service';
 import { Types } from 'mongoose';
 import { UserMongoEntity } from '../repository/user.mongo-entity';
-import { UpdateUserRequest } from '../port/user.request.port';
+import { UpdateUserRequestProps } from '../contract/user.request.contract';
 
-type TUpdateUserPayload = PickUseCasePayload<UpdateUserRequest, 'data' | '_id'>;
+type TUpdateUserPayload = PickUseCasePayload<
+  UpdateUserRequestProps,
+  'data' | '_id'
+>;
 type TUpdateUserResponse = ResponseDto;
 @Injectable()
 export class UpdateUser extends BaseUseCase<
@@ -51,7 +54,10 @@ export class UpdateUser extends BaseUseCase<
     });
   }
 
-  private _updateUserProps(user: UserMongoEntity, data: UpdateUserRequest) {
+  private _updateUserProps(
+    user: UserMongoEntity,
+    data: UpdateUserRequestProps,
+  ) {
     user.user_name = data.user_name;
     user.level = data.level;
   }

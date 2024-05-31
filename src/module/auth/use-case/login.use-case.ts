@@ -8,8 +8,8 @@ import { EnvService } from 'src/infra/config/env.service';
 import { InjectUserRepository } from 'src/module/user/repository/user.repository.provider';
 import { UserRepository } from 'src/module/user/repository/user.repository.service';
 import { HashService } from 'src/helper/module/hash.service';
-import { LoginUserRequestProps } from '../port/auth.request.port';
-import { LoginUserResponseProps } from '../port/auth.response.port';
+import { LoginUserRequestProps } from '../contract/auth.request.contract';
+import { LoginUserResponseProps } from '../contract/auth.response.contract';
 
 type TLoginPayload = PickUseCasePayload<LoginUserRequestProps, 'data'>;
 type TLoginResponse = ResponseDto<LoginUserResponseProps>;

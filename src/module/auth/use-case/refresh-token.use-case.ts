@@ -4,8 +4,8 @@ import { ResponseDto } from 'src/core/base/http/response.dto.base';
 import { BaseUseCase } from 'src/core/base/module/use-case.base';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
 import { EnvService } from 'src/infra/config/env.service';
-import { AuthRefreshTokenRequestProps } from '../port/auth.request.port';
-import { RefreshTokenResponseProps } from '../port/auth.response.port';
+import { AuthRefreshTokenRequestProps } from '../contract/auth.request.contract';
+import { RefreshTokenResponseProps } from '../contract/auth.response.contract';
 
 interface IHistoryRefreshToken {
   refresh_token: string;

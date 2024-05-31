@@ -4,13 +4,10 @@ import { BaseUseCase } from 'src/core/base/module/use-case.base';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
 import { InjectUserRepository } from '../repository/user.repository.provider';
 import { UserRepository } from '../repository/user.repository.service';
-import { UserResponseProps } from '../port/user.response.port';
-import { GetPaginationRequestQueryProps } from 'src/core/port/get-pagination.request.port';
+import { UserResponseProps } from '../contract/user.response.contract';
+import { GetPaginationProps } from 'src/core/contract/get-pagination.request.contract';
 
-export type TGetUserPayload = PickUseCasePayload<
-  GetPaginationRequestQueryProps,
-  'data'
->;
+export type TGetUserPayload = PickUseCasePayload<GetPaginationProps, 'data'>;
 export type TGetUserResponse = ResponseDto<UserResponseProps[]>;
 @Injectable()
 export class GetUser extends BaseUseCase<TGetUserPayload, TGetUserResponse> {

@@ -7,7 +7,7 @@ import {
 import { ResponseDto } from 'src/core/base/http/response.dto.base';
 import { BaseUseCase } from 'src/core/base/module/use-case.base';
 
-import { OptionalSecretKey } from 'src/core/interface/optional-secret-key.interface';
+import { OptionalSecretKeyProps } from 'src/core/contract/optional-secret-key.request.contract';
 import { EnvService } from 'src/infra/config/env.service';
 import { InjectUserRepository } from '../repository/user.repository.provider';
 import { PickUseCasePayload } from 'src/core/base/types/pick-use-case-payload.type';
@@ -16,9 +16,9 @@ import { UserRepository } from '../repository/user.repository.service';
 import { UserMongoEntity } from '../repository/user.mongo-entity';
 import { HashService } from 'src/helper/module/hash.service';
 import { IRepositoryResponse } from 'src/core/interface/repository-response.interface';
-import { CreateUserRequest } from '../port/user.request.port';
+import { CreateUserRequestProps } from '../contract/user.request.contract';
 type TCreateUserPayload = PickUseCasePayload<
-  CreateUserRequest & OptionalSecretKey,
+  CreateUserRequestProps & OptionalSecretKeyProps,
   'data' | 'user'
 >;
 type TCreateUserResponse = ResponseDto<IRepositoryResponse>;
