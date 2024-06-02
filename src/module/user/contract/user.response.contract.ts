@@ -6,5 +6,4 @@ export interface UserResponseProps extends IId {
   user_id: string;
   user_name: string;
   level: string;
-  hak_akses_json?: string;
 }
