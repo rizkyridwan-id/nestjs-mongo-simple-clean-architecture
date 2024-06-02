@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Headers,
-  Post,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Headers, Post } from '@nestjs/common';
 import { LoginRequestDto } from './dto/login-user-request.dto';
 import { LoginUser } from '../use-case/login.use-case';
 import { CreateUser } from 'src/module/user/use-case/create-user.use-case';
@@ -16,6 +10,7 @@ import {
   LoginUserRequestProps,
   RegisterUserRequestProps,
 } from '../contract/auth.request.contract';
+import { AuthRefreshTokenRequestDto } from './dto/auth-refresh-token.dto';
 @Controller('v1/auth')
 export class AuthController {
   constructor(
@@ -45,7 +40,9 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refreshTokenHandler(@Body() body: AuthRefreshTokenRequestProps) {
+  async refreshTokenHandler(
+    @ZodBody(AuthRefreshTokenRequestDto) body: AuthRefreshTokenRequestProps,
+  ) {
     return this.refreshToken.execute({ data: body });
   }
 }
