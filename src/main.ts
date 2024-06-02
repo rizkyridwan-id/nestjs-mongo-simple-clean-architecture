@@ -17,14 +17,13 @@ import { DebugLoggerInterceptor } from './core/interceptor/debug-logger.intercep
 
 async function bootstrap() {
   const httpsMode = !!Number(process.env.HTTPS_MODE);
-  const secureOptions: NestApplicationOptions =
+  const { httpsOptions }: NestApplicationOptions =
     generateHttpsModeOption(httpsMode);
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({ https: httpsOptions! }),
     {
-      ...secureOptions,
       logger: new CustomLogger(),
       cors: true, // change this to Client IP when Production
     },
@@ -72,6 +71,8 @@ function generateHttpsModeOption(httpsMode: boolean): NestApplicationOptions {
       key: privateKey,
       cert: certificate,
       passphrase: '??',
+      requestCert: false,
+      rejectUnauthorized: false,
     };
     return { httpsOptions: credentials };
   }
