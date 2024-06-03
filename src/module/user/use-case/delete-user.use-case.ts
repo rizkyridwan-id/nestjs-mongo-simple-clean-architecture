@@ -24,7 +24,7 @@ export class DeleteUser extends BaseUseCase<
     _id,
   }: TDeleteUserPayload): Promise<TDeleteUserResponse> {
     try {
-      const idConverted = new Types.ObjectId();
+      const idConverted = new Types.ObjectId(_id);
       await this.userRepository.delete({ _id: idConverted });
       return new ResponseDto({
         status: HttpStatus.OK,
