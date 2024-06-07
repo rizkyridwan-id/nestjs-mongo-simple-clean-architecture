@@ -41,7 +41,7 @@ export class UpdateUser extends BaseUseCase<
 
       this._updateUserProps(user, data);
 
-      user.save();
+      await user.save();
     } catch (err) {
       this.logger.error(err);
       if (err instanceof HttpException) throw err;
